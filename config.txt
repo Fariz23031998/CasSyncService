@@ -1,0 +1,17 @@
+{
+    "host": "localhost",
+    "database": "C:/REGOS BASE/REGOS_BUYUK.FDB",
+    "user": "SYSDBA",
+    "password": "masterkey",
+    "price_type": 1,
+    "object_id": 1,
+    "check_time": 10,
+    "divider": 1,
+    "weight_unit_id": 2,
+    "piece_unit_id": 1,
+    "use_piece": False,
+    "departments": {"W": [2, "Весовой"], "P": [3, "Штучный"]},
+    "mdb_conn": r'DRIVER={Microsoft Access Driver (*.mdb, *.accdb)};'
+                r'DBQ=C:\CAS\CL-Works Pro\Data\MAINDATA.mdb;'
+                r'PWD=clp123;'
+}
