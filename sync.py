@@ -57,7 +57,7 @@ class UpdateData:
                 charset='utf-8',
             )
         except fdb.fbcore.DatabaseError:
-            write_log_file(f"Не получается к база данных Regos. {self.get_date()}")
+            write_log_file(f"Can't connect to the database of Regos. {self.get_date()}")
             return False
         else:
             self.fdb_cursor = self.fdb_conn.cursor()
@@ -68,7 +68,7 @@ class UpdateData:
         try:
             self.mdb_conn = pyodbc.connect(mdb_conn)
         except pyodbc.Error as e:
-            write_log_file(f"Не получается к база данных CL-Works Pro: {e} ({self.get_date()})")
+            write_log_file(f"Can't connect to the database of CL-Works Pro: {e} ({self.get_date()})")
             return False
         else:
             self.mdb_cursor = self.mdb_conn.cursor()
