@@ -4,7 +4,6 @@
     "user": "SYSDBA",
     "password": "masterkey",
     "price_type": 1,
-    "object_id": 1,
     "check_time": 10,
     "divider": 1,
     "weight_unit_id": 2,

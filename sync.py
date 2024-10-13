@@ -17,7 +17,6 @@ with open("config.txt", encoding='utf-8') as config_file:
 
 
 price_type = config["price_type"]
-stock_house = config["object_id"]
 host = config["host"]
 database = config["database"]
 user = config["user"]
