@@ -29,7 +29,10 @@ piece_unit_id = config["piece_unit_id"]
 use_piece = config["use_piece"]
 departments = config["departments"]
 check_time = config["check_time"]
-
+weight_barcode_id = config["weight_barcode_id"]
+piece_barcode_id = config["piece_barcode_id"]
+weight_prefix = config["weight_prefix"]
+piece_prefix = config["piece_prefix"]
 
 class UpdateData:
     def __init__(self):
@@ -43,6 +46,7 @@ class UpdateData:
         self.path = self.get_short_path_name(database)
         self.mdb_conn = None
         self.mdb_cursor = None
+        self.arg_get_items = (price_type, weight_unit_id, piece_unit_id) if use_piece else (price_type, weight_unit_id, weight_unit_id)
 
     def connect_fdb(self):
         try:
@@ -215,7 +219,8 @@ class UpdateData:
         SELECT f.ITM_ID, f.ITM_CODE, f.ITM_NAME, f.ITM_UNIT, f.ITM_GROUP, p.PRC_VALUE
         FROM CTLG_ITM_ITEMS_REF f
         JOIN CTLG_ITM_PRICES_REF p ON f.ITM_ID = p.PRC_ITEM
-        WHERE f.ITM_DELETED_MARK = 0 AND p.PRC_PRICE_TYPE = ? AND p.PRC_VALUE <> 0
+        WHERE f.ITM_DELETED_MARK = 0 AND p.PRC_PRICE_TYPE = ? AND p.PRC_VALUE <> 0 AND f.ITM_UNIT IN (?, ?)
+        ORDER BY f.ITM_CODE
         """
 
 
@@ -233,13 +238,13 @@ class UpdateData:
         """
 
         insert_query = """
-        INSERT INTO TbPLU (PluNo, PluType, ItemCode, Name1, UnitPrice, UpdateDate, GroupNo, DeptNo)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+        INSERT INTO TbPLU (PluNo, PluType, ItemCode, Name1, UnitPrice, UpdateDate, GroupNo, DeptNo, PreFix, BarcodeID)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         """
 
         try:
             # Fetch data from Firebird
-            self.fdb_cursor.execute(fdb_query, (price_type,))
+            self.fdb_cursor.execute(fdb_query, self.arg_get_items)
             fdb_items = {item[1]: item for item in self.fdb_cursor.fetchall()}  # Using ITM_CODE as key
 
             # Fetch data from Access
@@ -265,7 +270,18 @@ class UpdateData:
                             group_no != mdb_item[4] or dept_no != mdb_item[5]):
                         updates.append((plu_type, name, unit_price, current_date, group_no, dept_no, itm_code))
                 else:
-                    inserts.append((itm_code, plu_type, itm_code, name, unit_price, current_date, group_no, dept_no))
+                    inserts.append((
+                        itm_code,
+                        plu_type,
+                        itm_code,
+                        name,
+                        unit_price,
+                        current_date,
+                        group_no,
+                        dept_no,
+                        weight_prefix if plu_type == 1 else piece_prefix,
+                        weight_barcode_id if plu_type == 1 else piece_barcode_id
+                    ))
             # Execute batch updates
             if updates:
                 self.mdb_cursor.executemany(update_query, updates)
