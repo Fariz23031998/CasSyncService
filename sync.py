@@ -35,7 +35,6 @@ piece_prefix = config["piece_prefix"]
 
 class UpdateData:
     def __init__(self):
-        # ... (other initialization code)
         self.fdb_conn = None
         self.fdb_cursor = None
         self.last_sync = 0
